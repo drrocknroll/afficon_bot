@@ -1,7 +1,18 @@
 import os
 import json
 import sqlite3
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+import os
 from datetime import datetime
+
+from aiogram import Bot, Dispatcher, types
+from aiogram.types import Message
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+
+# === Настройки Telegram ===
+BOT_TOKEN = os.getenv("BOT_TOKEN") or "твой_токен"
+bot = Bot(token=BOT_TOKEN)
+dp = Dispatcher(bot, storage=MemoryStorage())
 
 class AlexBSalesAgent:
     def __init__(self, profile="partners"):
@@ -46,8 +57,18 @@ class AlexBSalesAgent:
         self.db = self.init_db()
         print(f"Переключено на профиль: {new_profile}")
 
+# === Telegram хендлеры ===
+
+@dp.message_handler(commands=["start"])
+async def handle_start(message: Message):
+    await message.answer("👋 Привет! Я AlexB-Sales — бот-агент по работе с партнёрами. Готов помочь!")
+
 # Пример использования
 if __name__ == "__main__":
     agent = AlexBSalesAgent()
     print("Агент AlexB-Sales инициализирован!")
     print(f"Загружено стилей общения: {len(agent.chat_styles)}")
+
+    # Возможность запустить бота в polling-режиме (локально)
+    from aiogram import executor
+    executor.start_polling(dp, skip_updates=True)

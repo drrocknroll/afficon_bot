@@ -1,8 +1,6 @@
 from fastapi import FastAPI, Request
 from aiogram import types
-
-# Импортируем бота и диспетчер из основного файла с логикой бота
-from core.agent import bot, dp
+from core.agent import dp  # <-- импортируешь диспетчер из agent.py
 
 app = FastAPI()
 
@@ -13,6 +11,6 @@ async def root():
 @app.post("/webhook")
 async def telegram_webhook(req: Request):
     update = await req.json()
-    TelegramRequest = types.Update.to_object(update)
-    await dp.process_update(TelegramRequest)
+    telegram_update = types.Update.to_object(update)
+    await dp.process_update(telegram_update)
     return {"status": "ok"}
